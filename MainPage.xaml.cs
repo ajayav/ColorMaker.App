@@ -1,24 +1,50 @@
-﻿namespace ColorMaker;
+﻿using CommunityToolkit.Maui.Alerts;
+
+namespace ColorMaker;
 
 public partial class MainPage : ContentPage
-{
-	int count = 0;
+{ 
 
 	public MainPage()
 	{
 		InitializeComponent();
 	}
 
-	private void OnCounterClicked(object sender, EventArgs e)
+	string hexValue;
+
+	private void Slider_ValueChanged(object sender, ValueChangedEventArgs e)
 	{
-		count++;
+		var red = sldRed.Value;
+		var green = sldGreen.Value;
+		var blue = sldBlue.Value;
+		Color color = Color.FromRgb(red, green, blue);
+		SetColor(color);
+	}
 
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
+	private void SetColor(Color color)
+	{
+		btnRandom.BackgroundColor = color;
+		Container.BackgroundColor = color;
+		hexValue = color.ToHex();
+		lblHex.Text = hexValue;
+	}
 
-		SemanticScreenReader.Announce(CounterBtn.Text);
+	private void btnRandom_Clicked(object sender, EventArgs e)
+	{
+		var random = new Random();
+
+		var color = Color.FromRgb(
+			random.Next(0,265),
+			random.Next(0,265),
+			random.Next(0,265));
+		SetColor(color);
+	}
+
+	private async void ImageButton_Clicked(object sender, EventArgs e)
+	{
+		await Clipboard.SetTextAsync(hexValue);
+		var toast = Toast.Make("Color Copied", CommunityToolkit.Maui.Core.ToastDuration.Short, 15);
+		await toast.Show();
 	}
 }
 
